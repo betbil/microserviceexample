@@ -1,4 +1,4 @@
-package com.example.orderservice;
+package com.example.portfolioservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -24,7 +24,7 @@ public class TestDemoApplication {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.from(OrderServiceApplication::main).with(TestDemoApplication.class).run(args);
+		SpringApplication.from(DemoApplication::main).with(TestDemoApplication.class).run(args);
 	}
 
 }

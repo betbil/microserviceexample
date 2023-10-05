@@ -1,0 +1,22 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    username: microuser
+    password: micropass
+    url: jdbc:postgresql://localhost:5432/microservicedb
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        tool:
+          hbm2ddl: DEBUG
+app:
+  updatedb: true
+

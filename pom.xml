@@ -8,6 +8,8 @@
   <modules>
         <module>userservice</module>
         <module>orderservice</module>
+        <module>stockservice</module>
+        <module>portfolioservice</module>
   </modules>
   <name>microservicesexample</name>
   <url>http://maven.apache.org</url>
