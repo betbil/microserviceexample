@@ -1,4 +1,4 @@
-package com.example.orderservice.model;
+package com.example.portfolioservice.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class Stock {
+@AllArgsConstructor
+@Builder
+//TODO: Add indexes for userId and stockId
+public class PortfolioItem {
     @Id
     @GeneratedValue
-    private int id;
-    private String productCode;
-    private int ownerId;
-    private String status; //bunu sell, ve not sell gibi bir enum yapabilşirsimn
+    private Integer id;
+    private Integer userId;
+    private Integer stockId;
 }

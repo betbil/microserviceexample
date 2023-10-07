@@ -1,0 +1,58 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    username: microuser
+    password: micropass
+    url: jdbc:postgresql://localhost:5432/microservicedb
+  kafka:
+    bootstrap-servers: capital-stud-12971-eu1-kafka.upstash.io:9092
+    properties:
+      security:
+        protocol: SASL_SSL
+      sasl:
+        mechanism: SCRAM-SHA-256
+        jaas:
+          config: org.apache.kafka.common.security.scram.ScramLoginModule required username="Y2FwaXRhbC1zdHVkLTEyOTcxJDiDGfz1CAupaBl9qGSlRP5nhAfB3a-FDKrNEvM" password="MTBjM2NhN2ItYjc1Yy00NGQzLTk1ZmEtY2ZlYzJkN2I3MjYy";
+    consumer:
+      group-id: portfolio-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            use:
+              type:
+                headers: false
+            value:
+              default:
+                type: com.example.portfolioservice.service.BuyOrderPlacedEvent
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            add:
+              type:
+                headers: false
+
+logging:
+  level:
+    org:
+      springframework:
+        orm:
+          jpa: DEBUG
+        transaction: DEBUG
+      hibernate:
+        SQL: DEBUG
+        tool:
+          hbm2ddl: DEBUG
+
+server:
+  port: 8092

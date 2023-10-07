@@ -17,3 +17,5 @@ logging:
         SQL: DEBUG
         tool:
           hbm2ddl: DEBUG
+app:
+  updatedb: true
