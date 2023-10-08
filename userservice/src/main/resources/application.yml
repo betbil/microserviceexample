@@ -27,6 +27,19 @@ spring:
             add:
               type:
                 headers: false
+      consumer:
+        group-id: user-service
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: com.example.userservice.eventconfig.consumes.MultiTopicJsonDeserializer
+        properties:
+          spring:
+            json:
+              use:
+                type:
+                  headers: false
+              value:
+                default:
+                  type: com.example.userservice.eventconfig.consumes.MultiTopicJsonDeserializer
 
 logging:
   level:

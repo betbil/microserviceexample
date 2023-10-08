@@ -21,7 +21,7 @@ spring:
     consumer:
       group-id: portfolio-service
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: com.example.portfolioservice.eventconfig.consumes.MultiTopicJsonDeserializer
       properties:
         spring:
           json:
@@ -30,7 +30,7 @@ spring:
                 headers: false
             value:
               default:
-                type: com.example.portfolioservice.service.BuyOrderPlacedEvent
+                type: com.example.portfolioservice.eventconfig.consumes.MultiTopicJsonDeserializer
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -53,6 +53,7 @@ logging:
         SQL: DEBUG
         tool:
           hbm2ddl: DEBUG
+    root: debug
 
 server:
   port: 8092

@@ -1,9 +1,7 @@
 package com.example.userservice.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
@@ -22,7 +20,10 @@ public class UserOrderRequest {
     private Integer userId;
     private Integer stockId;
     private String stockCode;
+    private UUID cancelId;
+    @Enumerated(EnumType.STRING)
     private OrderRequestType requestType;
+    @Enumerated(EnumType.STRING)
     private OrderStatusType status;
     private String statusDescription; // for error messages
     @Column(nullable = false, updatable = false)
@@ -35,6 +36,21 @@ public class UserOrderRequest {
         this.userId = req.getUserId();
         this.stockCode = req.getStockCode();
         this.requestType = OrderRequestType.BUY;
+        this.status = OrderStatusType.PENDING;
+    }
+
+    public void updateBy(SellOrderRequest req){
+        this.userId = req.getUserId();
+        this.stockCode = req.getStockCode();
+        this.stockId = req.getStockId();
+        this.requestType = OrderRequestType.SELL;
+        this.status = OrderStatusType.PENDING;
+    }
+
+    public void updateForCancel(UUID uuid, Integer userId){
+        this.cancelId = uuid;
+        this.userId = userId;
+        this.requestType = OrderRequestType.CANCEL;
         this.status = OrderStatusType.PENDING;
     }
 }

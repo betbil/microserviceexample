@@ -18,6 +18,6 @@ public class PortfolioItem {
     @Id
     @GeneratedValue
     private Integer id;
-    private Integer userId;
-    private Integer stockId;
+    public Integer userId;
+    public Integer stockId;
 }
