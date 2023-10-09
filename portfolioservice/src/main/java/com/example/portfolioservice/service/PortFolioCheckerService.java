@@ -21,24 +21,24 @@ public class PortFolioCheckerService {
     private final KafkaTemplate kafkaTemplate;
     @KafkaListener(topics = "buy-order-placed", groupId = "portfolio-service")
     public void handleBuyOrderRequest(BuyOrderPlacedEvent event) {
-        log.debug("PortFolioCheckerService.handleBuyOrderRequest request: {}", event);
-        log.info("PortFolioCheckerService.handleBuyOrderRequest buy-order-placed-c1 request: {}", event);
+        log.debug("handleBuyOrderRequest request: {}", event);
+        log.info("handleBuyOrderRequest buy-order-placed-c1 request: {}", event);
         this.kafkaTemplate.send("buy-order-placed-c1", event.getOrderId().toString(), event);
     }
 
     @KafkaListener(topics = "sell-order-placed", groupId = "portfolio-service")
     public void handleSellOrderRequest(SellOrderPlacedEvent event) {
-        log.debug("PortFolioCheckerService.handleSellOrderRequest request: {}", event);
+        log.debug("handleSellOrderRequest request: {}", event);
         //check id the seller owns the stockid
-        boolean portfolioExists = this.portfolioService.findByStockIdAndUserId(event.getUserId(), event.getStockId()).isEmpty();
+        boolean portfolioExists = !(this.portfolioService.findByStockIdAndUserId(event.getUserId(), event.getStockId()).isEmpty());
         if (portfolioExists){
             //if yes, announce valid sell order
-            log.info("PortFolioCheckerService.handleSellOrderRequest sell-order-placed-c1 request: {}", event);
+            log.info("handleSellOrderRequest sell-order-placed-c1 request: {}", event);
             this.kafkaTemplate.send("sell-order-placed-c1", event.getOrderId().toString(), event);
         }else{
             //if no, announce order fail event
             var failedEvent = OrderFailedEvent.builder().orderId(event.getOrderId()).reason("User does not own the stock").build();
-            log.info("PortFolioCheckerService.handleSellOrderRequest order-failed request: {}", failedEvent);
+            log.info("handleSellOrderRequest order-failed request: {}", failedEvent);
             this.kafkaTemplate.send("order-failed", event.getOrderId().toString(), failedEvent);
         }
     }

@@ -12,6 +12,7 @@ import com.example.userservice.model.UserOrderRequest;
 import com.example.userservice.repository.UserOrderRequestRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -21,12 +22,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserOrderService {
 
     private final KafkaTemplate kafkaTemplate;
     private final UserOrderRequestRepository userOrderRequestRepository;
     @Transactional
     public void buyOrder(BuyOrderRequest buyOrderRequest) {
+        log.debug("buyOrder request: {}", buyOrderRequest);
         //save to db
         UserOrderRequest userOrderRequest = new UserOrderRequest();
         userOrderRequest.updateBy(buyOrderRequest);
@@ -42,6 +45,7 @@ public class UserOrderService {
 
     @Transactional
     public void sellOrder(SellOrderRequest sellOrderRequest) {
+        log.debug("sellOrder request: {}", sellOrderRequest);
         //save to db
         UserOrderRequest userOrderRequest = new UserOrderRequest();
         userOrderRequest.updateBy(sellOrderRequest);
@@ -58,6 +62,7 @@ public class UserOrderService {
 
     @Transactional
     public void cancelOrder(String orderID, Integer userId) {
+        log.debug("cancelOrder request: orderID {}, userID {}", orderID, userId);
         //TODO: userid jwt den alacak şekide değiştir ve userid içinde check ekle
         UUID uuid = UUID.fromString(orderID);
        Optional<UserOrderRequest> userOrderRequest = this.userOrderRequestRepository.findById(uuid);
@@ -88,12 +93,15 @@ public class UserOrderService {
     //user-service
     @KafkaListener(topics = "order-failed", groupId = "user-service")
     public void handleOrderFailedEvent(OrderFailedEvent orderFailedEvent) {
+        log.debug("handleOrderFailedEvent request: {}", orderFailedEvent);
         Optional<UserOrderRequest> failedOrder = this.userOrderRequestRepository.findById(orderFailedEvent.getOrderId());
         if (failedOrder.isPresent()){
             failedOrder.get().setStatus(OrderStatusType.FAILED);
             failedOrder.get().setStatusDescription(orderFailedEvent.getReason());
             this.userOrderRequestRepository.save(failedOrder.get());
+        }else{
+            log.info("Order not found: {} so cancel ignored", orderFailedEvent.getOrderId());
         }
-        //TODO: add logging
+
     }
 }

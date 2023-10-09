@@ -28,9 +28,6 @@ spring:
             use:
               type:
                 headers: false
-            value:
-              default:
-                type: com.example.portfolioservice.eventconfig.consumes.MultiTopicJsonDeserializer
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
