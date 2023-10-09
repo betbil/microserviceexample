@@ -20,6 +20,7 @@ public class UserOrderController {
     public void buyOrder(@RequestBody BuyOrderRequest buyOrderRequest) {
        //TODO: userid jwt den alacak şekide değiştir
        log.info("buyOrder request received: {}", buyOrderRequest);
+       this.userService.checkStockExists(buyOrderRequest.getStockCode());
        this.userService.buyOrder(buyOrderRequest);
 
     }

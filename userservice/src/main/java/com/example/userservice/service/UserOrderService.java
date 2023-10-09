@@ -5,10 +5,8 @@ import com.example.userservice.eventconfig.produces.BuyOrderPlacedEvent;
 import com.example.userservice.eventconfig.produces.CancelOrderPlacedEvent;
 import com.example.userservice.eventconfig.produces.SellOrderPlacedEvent;
 import com.example.userservice.exceptions.CancelRequestException;
-import com.example.userservice.model.BuyOrderRequest;
-import com.example.userservice.model.OrderStatusType;
-import com.example.userservice.model.SellOrderRequest;
-import com.example.userservice.model.UserOrderRequest;
+import com.example.userservice.exceptions.InvalidRequestException;
+import com.example.userservice.model.*;
 import com.example.userservice.repository.UserOrderRequestRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +15,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.net.SocketException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,6 +26,23 @@ public class UserOrderService {
 
     private final KafkaTemplate kafkaTemplate;
     private final UserOrderRequestRepository userOrderRequestRepository;
+    private final StockClient stockClient;
+
+    public boolean checkStockExists(String stockCode) {
+        log.debug("stockExists request: {}", stockCode);
+        StockStatus stockStatus = null;
+        try{
+            stockStatus = this.stockClient.getStockStatus(stockCode);
+        }catch (Exception ex){
+            log.error("Error while checking stock status: {}", ex.getMessage());
+        }
+
+        if (stockStatus == null || !stockStatus.isExists()) {
+            throw new InvalidRequestException("Stock does not exist");
+        }
+        return true;
+    }
+
     @Transactional
     public void buyOrder(BuyOrderRequest buyOrderRequest) {
         log.debug("buyOrder request: {}", buyOrderRequest);

@@ -1,4 +1,4 @@
-package com.example.userservice.model;
+package com.example.stockservice.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -7,10 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class BuyOrderRequest {
-    private Integer userId; //TODO: JWT eklediğinde jwtden alınacak uradan alınmayacak
-    private String stockCode;
+public class StockStatus {
+    private boolean exists;
 }

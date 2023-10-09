@@ -13,7 +13,14 @@ spring:
 logging:
   level:
     org:
+      springframework:
+        orm:
+          jpa: DEBUG
+        transaction: DEBUG
       hibernate:
         SQL: DEBUG
         tool:
           hbm2ddl: DEBUG
+
+server:
+  port: 8091

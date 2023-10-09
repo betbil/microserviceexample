@@ -22,4 +22,13 @@ public class GeneralExceptionHandler {
         log.warn("IllegalArgumentException: {}", ex.getMessage());
         return ex.getMessage();
     }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleInvalidRequestException(InvalidRequestException ex) {
+        log.warn("InvalidRequestException: {}", ex.getMessage());
+        return ex.getMessage();
+    }
 }
+
+
