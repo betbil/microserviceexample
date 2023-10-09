@@ -16,4 +16,10 @@ public class GeneralExceptionHandler {
         log.warn("CancelRequestException: {}", ex.getMessage());
         return ex.getMessage();
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.warn("IllegalArgumentException: {}", ex.getMessage());
+        return ex.getMessage();
+    }
 }
