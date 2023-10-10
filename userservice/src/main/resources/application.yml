@@ -5,6 +5,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
   datasource:
     username: microuser
     password: micropass
@@ -65,4 +66,9 @@ feign:
 app:
   stockservice:
     stockServiceUrl: ${STOCK_SERVICE_URL:http://localhost:8093}
-
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000 # a day
+      refresh-token:
+        expiration: 604800000 # 7 days

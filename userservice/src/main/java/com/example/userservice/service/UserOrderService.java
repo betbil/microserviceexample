@@ -17,7 +17,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.net.SocketException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,7 +54,7 @@ public class UserOrderService {
         userOrderRequest.updateBy(buyOrderRequest);
         this.userOrderRequestRepository.save(userOrderRequest);
         //publish event
-        //TODO: catch exception and rollback db
+
         this.kafkaTemplate.send("buy-order-placed", userOrderRequest.getId().toString(), BuyOrderPlacedEvent.builder()
                 .stockCode(buyOrderRequest.getStockCode())
                 .userId(buyOrderRequest.getUserId())
@@ -71,7 +70,6 @@ public class UserOrderService {
         userOrderRequest.updateBy(sellOrderRequest);
         this.userOrderRequestRepository.save(userOrderRequest);
         //publish event
-        //TODO: catch exception and rollback db
         this.kafkaTemplate.send("sell-order-placed", userOrderRequest.getId().toString(), SellOrderPlacedEvent.builder()
                 .stockCode(sellOrderRequest.getStockCode())
                 .userId(sellOrderRequest.getUserId())
@@ -83,8 +81,7 @@ public class UserOrderService {
     @Transactional
     public void cancelOrder(String orderID, Integer userId) {
         log.debug("cancelOrder request: orderID {}, userID {}", orderID, userId);
-        //TODO: userid jwt den alacak şekide değiştir ve userid içinde check ekle
-        UUID uuid = UUID.fromString(orderID);
+         UUID uuid = UUID.fromString(orderID);
        Optional<UserOrderRequest> userOrderRequest = this.userOrderRequestRepository.findById(uuid);
         if(userOrderRequest.isPresent()){
             if (!userOrderRequest.get().getUserId().equals(userId)){
@@ -98,7 +95,6 @@ public class UserOrderService {
             this.userOrderRequestRepository.save(cancelUserOrderRequest);
             //send cancel event to kafka
             //publish event
-            //TODO: catch exception and rollback db
             this.kafkaTemplate.send("cancel-order-placed", cancelUserOrderRequest.getId().toString(), CancelOrderPlacedEvent.builder()
                     .orderId(cancelUserOrderRequest.getId())
                     .cancelId(cancelUserOrderRequest.getCancelId())
@@ -129,7 +125,7 @@ public class UserOrderService {
     }
 
     @KafkaListener(topics = "order-processed", groupId = "user-service")
-    @Transactional //TODO: check if this is needed
+    @Transactional
     public void handleOrderProcessedEvent(OrderProcessedEvent orderProcessedEvent) {
         log.debug("handleOrderProcessedEvent request: {}", orderProcessedEvent);
 

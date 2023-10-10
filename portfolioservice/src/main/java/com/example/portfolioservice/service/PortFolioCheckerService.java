@@ -7,15 +7,13 @@ import com.example.portfolioservice.eventconfig.produces.OrderFailedEvent;
 import com.example.portfolioservice.model.PortfolioItem;
 import com.example.portfolioservice.repository.PortfolioItemRepository;
 import jakarta.transaction.Transactional;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +50,7 @@ public class PortFolioCheckerService {
     }
 
     @KafkaListener(topics = "order-processed", groupId = "portfolio-service")
-    @Transactional //TODO: check if this is needed
+    @Transactional
     public void handleOrderProcessedEvent(OrderProcessedEvent orderProcessedEvent) {
         log.debug("handleOrderProcessedEvent request: {}", orderProcessedEvent);
         Optional<PortfolioItem> sellerPortfolio

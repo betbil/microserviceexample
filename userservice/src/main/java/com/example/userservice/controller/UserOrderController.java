@@ -1,5 +1,7 @@
 package com.example.userservice.controller;
 
+import com.example.userservice.exceptions.InvalidRequestException;
+import com.example.userservice.model.APPUser;
 import com.example.userservice.model.BuyOrderRequest;
 import com.example.userservice.model.SellOrderRequest;
 import com.example.userservice.service.UserOrderService;
@@ -7,6 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,14 +20,27 @@ public class UserOrderController {
 
     private final UserOrderService userService;
 
+    private Integer getUserIdFromAuth() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof APPUser) {
+                Integer userId = ((APPUser) principal).getId();
+                log.debug("User ID: {}", userId);
+                return userId;
+            }
+        }
+        return 0;
+    }
    @PostMapping("/buy-order")
    @ResponseStatus(HttpStatus.ACCEPTED)
     public void buyOrder(@RequestBody @Valid BuyOrderRequest buyOrderRequest) {
-       //TODO: userid jwt den alacak şekide değiştir
+        if (buyOrderRequest.getUserId() == null){
+            buyOrderRequest.setUserId(getUserIdFromAuth());
+        }
        log.info("buyOrder request received: {}", buyOrderRequest);
-       //TODO: SONRA AC STARTS TODOBETUL
        this.userService.checkStockExists(buyOrderRequest.getStockCode());
-       //TODO: SONRA AC ENDS
        this.userService.buyOrder(buyOrderRequest);
 
     }
@@ -31,7 +48,10 @@ public class UserOrderController {
     @PostMapping("/sell-order")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void sellOrder(@RequestBody @Valid SellOrderRequest sellOrderRequest) {
-        //TODO: userid jwt den alacak şekide değiştir
+        if (sellOrderRequest.getUserId() == null){
+            sellOrderRequest.setUserId(getUserIdFromAuth());
+        }
+
         log.info("sellOrder request received: {}", sellOrderRequest);
         this.userService.sellOrder(sellOrderRequest);
 
@@ -39,9 +59,13 @@ public class UserOrderController {
 
     @PostMapping("/cancel-order")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void cancelOrder(@RequestParam(name = "orderId", required = true) String orderID,@RequestParam(name = "userID", required = true) Integer userId) {
-        //TODO: userid jwt den alacak şekide değiştir
-        log.info("cancelOrder request received: orderID {}, userID {}", orderID, userId);
-        this.userService.cancelOrder(orderID,userId);
+    public void cancelOrder(@RequestParam(name = "orderId", required = true) String orderID) {
+        Integer userID = getUserIdFromAuth();
+        if ((userID == null) || (userID == 0)){
+            throw new InvalidRequestException("Invalid Request Exception");
+        }
+
+        log.info("cancelOrder request received: orderID {}, userID {}", orderID, userID);
+        this.userService.cancelOrder(orderID,userID);
     }
 }

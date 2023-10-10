@@ -32,7 +32,7 @@ public class OrderProcessorService {
     private final SellOrderRepository sellOrderRepository;
     private final RedissonClient redissonClient;
 
-    @Transactional //TODO: check if this is needed
+    @Transactional
     @KafkaListener(topics = "cancel-order-placed", groupId = "order-service")
     public void handleCancelOrderPlacedEvent(CancelOrderPlacedEvent cancelOrderPlacedEvent) {
         log.debug("handleCancelOrderPlacedEvent request: {}", cancelOrderPlacedEvent);
@@ -87,7 +87,7 @@ public class OrderProcessorService {
         }
     }
 
-    @Transactional //TODO: check if this is needed
+    @Transactional
     @KafkaListener(topics = "buy-order-placed-c1", groupId = "order-service")
     public void handleBuyOrderPlacedEvent(BuyOrderPlacedEvent buyOrderPlacedEvent) {
         log.debug("handleBuyOrderPlacedEvent request: {}", buyOrderPlacedEvent);
@@ -107,7 +107,7 @@ public class OrderProcessorService {
 
     }
 
-    @Transactional //TODO: check if this is needed
+    @Transactional
     @KafkaListener(topics = "sell-order-placed-c1", groupId = "order-service")
     public void handleSellOrderPlacedEvent(SellOrderPlacedEvent sellOrderPlacedEvent) {
         log.debug("handleSellOrderPlacedEvent request: {}", sellOrderPlacedEvent);
@@ -138,7 +138,7 @@ public class OrderProcessorService {
 
     }
 
-    @Transactional //TODO check if this is needed
+    @Transactional
     public void matchOrders() {
         RLock lock = redissonClient.getLock("matchOrders");
         Optional<BuyOrder> firstBuyOrder = Optional.empty();
