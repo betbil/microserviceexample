@@ -1,0 +1,20 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    properties:
+      security:
+        protocol: PLAINTEXT
+      sasl:
+        enabled: false
+        jaas:
+          config:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: test-order
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.example.orderservice.eventconfig.consumes.MultiTopicJsonDeserializer
+
+
+

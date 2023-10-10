@@ -1,5 +1,6 @@
 package com.example.orderservice.cmd;
 
+import com.example.orderservice.config.ApplicationProperties;
 import com.example.orderservice.model.OrderStatusType;
 import com.example.orderservice.model.SellOrder;
 import com.example.orderservice.repository.SellOrderRepository;
@@ -18,22 +19,27 @@ public class DataCreator implements CommandLineRunner {
     private final static String APPLE = "APPL";
     private final static Integer APPLE_CMPNY_ID = 1000; //some magic number, may be set to a negative number
 
+    private final ApplicationProperties applicationProperties;
+
     @Override
     public void run(String... args) throws Exception {
-        List<SellOrder> intialSellOrderListOfCmpny = new ArrayList<>();
-        for (int i = 1; i <= 10; i++){
-            SellOrder sellOrder = SellOrder.builder()
-                    .stockId(i)
-                    .userId(DataCreator.APPLE_CMPNY_ID)
-                    .status(OrderStatusType.PENDING)
-                    .build();
+        if (applicationProperties.isCreateSellerData()) {
+            List<SellOrder> intialSellOrderListOfCmpny = new ArrayList<>();
+            for (int i = 1; i <= 10; i++){
+                SellOrder sellOrder = SellOrder.builder()
+                        .stockId(i)
+                        .userId(DataCreator.APPLE_CMPNY_ID)
+                        .status(OrderStatusType.PENDING)
+                        .build();
 
-            if (sellOrder.getId() == null) {
-                sellOrder.setId(UUID.randomUUID());
+                if (sellOrder.getId() == null) {
+                    sellOrder.setId(UUID.randomUUID());
+                }
+
+                intialSellOrderListOfCmpny.add(sellOrder);
             }
-
-            intialSellOrderListOfCmpny.add(sellOrder);
+            this.sellOrderRepository.saveAll(intialSellOrderListOfCmpny);
         }
-        this.sellOrderRepository.saveAll(intialSellOrderListOfCmpny);
+
     }
 }

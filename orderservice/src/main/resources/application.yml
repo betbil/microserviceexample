@@ -57,3 +57,4 @@ server:
 
 app:
   redisUrl: ${REDIS_SERVICE_URL:redis://127.0.0.1:6379}
+  create-seller-data: ${CREATE_SELLER_DATA:true}
