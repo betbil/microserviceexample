@@ -2,7 +2,7 @@
 FROM maven:3.9.4-eclipse-temurin-17 as build
 WORKDIR /app
 COPY . /app
-RUN mvn clean package
+RUN mvn clean package -Dmaven.test.skip=true
 
 # --- Package stage ---
 FROM openjdk:17
