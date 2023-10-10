@@ -35,12 +35,11 @@ public class PortFolioCheckerService {
     public void handleSellOrderRequest(SellOrderPlacedEvent event) {
         log.debug("handleSellOrderRequest request: {}", event);
         this.kafkaTemplate.send("sell-order-placed-c1", event.getOrderId().toString(), event);
-        //TODO OPEN BELOW STARTS TODOBETUL
-        /*
+
         log.debug("handleSellOrderRequest request: {}", event);
         //check id the seller owns the stockid
-        boolean portfolioExists = !(this.portfolioService.findByStockIdAndUserId(event.getUserId(), event.getStockId()).isEmpty());
-        if (portfolioExists){
+
+        if (this.portfolioService.findFirstByUserIdAndStockId(event.getUserId(), event.getStockId()).isPresent()){
             //if yes, announce valid sell order
             log.info("handleSellOrderRequest sell-order-placed-c1 request: {}", event);
             this.kafkaTemplate.send("sell-order-placed-c1", event.getOrderId().toString(), event);
@@ -50,9 +49,6 @@ public class PortFolioCheckerService {
             log.info("handleSellOrderRequest order-failed request: {}", failedEvent);
             this.kafkaTemplate.send("order-failed", event.getOrderId().toString(), failedEvent);
         }
-
-         */
-        //TODO OPEN BELOW STARTS
     }
 
     @KafkaListener(topics = "order-processed", groupId = "portfolio-service")

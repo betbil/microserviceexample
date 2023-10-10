@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+
+  order-service:
+    build:
+      context: ./OrderService
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/microservicedb
+      - SPRING_DATASOURCE_USERNAME=microuser
+      - SPRING_DATASOURCE_PASSWORD=micropass
+      - REDIS_SERVICE_URL=redis://redissrv:6379
+
+    ports:
+      - "8091:8091"
+    depends_on:
+      - db
+      - redissrv
+
+  portfolio-service:
+    build:
+      context: ./PortfolioService
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/microservicedb
+      - SPRING_DATASOURCE_USERNAME=microuser
+      - SPRING_DATASOURCE_PASSWORD=micropass
+    ports:
+      - "8092:8092"
+    depends_on:
+      - db
+
+  stock-service:
+    build:
+      context: ./StockService
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/microservicedb
+      - SPRING_DATASOURCE_USERNAME=microuser
+      - SPRING_DATASOURCE_PASSWORD=micropass
+    ports:
+      - "8093:8093"
+    depends_on:
+      - db
+
+  user-service:
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/microservicedb
+      - SPRING_DATASOURCE_USERNAME=microuser
+      - SPRING_DATASOURCE_PASSWORD=micropass
+      - STOCK_SERVICE_URL=http://stock-service:8093
+    ports:
+      - "8094:8094"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=microservicedb
+      - POSTGRES_USER=microuser
+      - POSTGRES_PASSWORD=micropass
+    ports:
+      - "5432:5432"
+
+  redissrv:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"

@@ -53,3 +53,7 @@ logging:
 
 server:
   port: 8091
+
+
+app:
+  redisUrl: ${REDIS_SERVICE_URL:redis://127.0.0.1:6379}

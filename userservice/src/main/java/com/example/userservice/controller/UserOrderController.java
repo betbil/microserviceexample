@@ -3,6 +3,7 @@ package com.example.userservice.controller;
 import com.example.userservice.model.BuyOrderRequest;
 import com.example.userservice.model.SellOrderRequest;
 import com.example.userservice.service.UserOrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,11 @@ public class UserOrderController {
 
    @PostMapping("/buy-order")
    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void buyOrder(@RequestBody BuyOrderRequest buyOrderRequest) {
+    public void buyOrder(@RequestBody @Valid BuyOrderRequest buyOrderRequest) {
        //TODO: userid jwt den alacak şekide değiştir
        log.info("buyOrder request received: {}", buyOrderRequest);
        //TODO: SONRA AC STARTS TODOBETUL
-       //this.userService.checkStockExists(buyOrderRequest.getStockCode());
+       this.userService.checkStockExists(buyOrderRequest.getStockCode());
        //TODO: SONRA AC ENDS
        this.userService.buyOrder(buyOrderRequest);
 
@@ -29,7 +30,7 @@ public class UserOrderController {
 
     @PostMapping("/sell-order")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void sellOrder(@RequestBody SellOrderRequest sellOrderRequest) {
+    public void sellOrder(@RequestBody @Valid SellOrderRequest sellOrderRequest) {
         //TODO: userid jwt den alacak şekide değiştir
         log.info("sellOrder request received: {}", sellOrderRequest);
         this.userService.sellOrder(sellOrderRequest);

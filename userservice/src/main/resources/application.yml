@@ -49,6 +49,20 @@ logging:
         SQL: DEBUG
         tool:
           hbm2ddl: DEBUG
+    com.example.userservice: DEBUG
 
 server:
   port: 8094
+
+feign:
+  client:
+    config:
+      default:
+        loadBalancer:
+          enabled: false
+
+
+app:
+  stockservice:
+    stockServiceUrl: ${STOCK_SERVICE_URL:http://localhost:8093}
+

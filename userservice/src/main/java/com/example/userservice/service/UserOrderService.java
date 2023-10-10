@@ -1,5 +1,6 @@
 package com.example.userservice.service;
 
+import com.example.userservice.config.ApplicationProperties;
 import com.example.userservice.eventconfig.consumes.OrderFailedEvent;
 import com.example.userservice.eventconfig.consumes.OrderProcessedEvent;
 import com.example.userservice.eventconfig.produces.BuyOrderPlacedEvent;
@@ -28,9 +29,11 @@ public class UserOrderService {
     private final KafkaTemplate kafkaTemplate;
     private final UserOrderRequestRepository userOrderRequestRepository;
     private final StockClient stockClient;
+    private final ApplicationProperties applicationProperties;
 
     public boolean checkStockExists(String stockCode) {
         log.debug("stockExists request: {}", stockCode);
+        log.debug("stockExists url: {}", applicationProperties.getStockservice().getStockServiceUrl());
         StockStatus stockStatus = null;
         try{
             stockStatus = this.stockClient.getStockStatus(stockCode);
