@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -18,13 +19,14 @@ import java.util.UUID;
 @Builder
 public class BuyOrder {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    private UUID id;
+   private UUID id;
     private Integer userId;
+    @Enumerated(EnumType.STRING)
+    private OrderStatusType status;
     @Column(nullable = false, updatable = false)
     private LocalDateTime requestTime;
+    @PrePersist
+    public void prePersist() {
+        this.requestTime = LocalDateTime.now();
+    }
 }

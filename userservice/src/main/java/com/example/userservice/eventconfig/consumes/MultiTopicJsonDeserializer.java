@@ -11,10 +11,12 @@ import java.util.Map;
 public class MultiTopicJsonDeserializer implements Deserializer<Object> {
 
     private final JsonDeserializer<OrderFailedEvent> orderFailedDeserializer = new JsonDeserializer<>(OrderFailedEvent.class);
+    private final JsonDeserializer<OrderProcessedEvent> orderProcessedDeserializer = new JsonDeserializer<>(OrderProcessedEvent.class);
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
         orderFailedDeserializer.configure(configs, isKey);
+        orderProcessedDeserializer.configure(configs, isKey);
     }
 
     @Override
@@ -22,6 +24,8 @@ public class MultiTopicJsonDeserializer implements Deserializer<Object> {
         Object result = null;
         if ("order-failed".equals(topic)) {
             result = orderFailedDeserializer.deserialize(topic, data);
+        }else if ("order-processed".equals(topic)) {
+            result = orderProcessedDeserializer.deserialize(topic, data);
         }
         // Add more topics as needed.
         // TODO: Also consider adding error handling for unrecognized topics.
@@ -34,5 +38,6 @@ public class MultiTopicJsonDeserializer implements Deserializer<Object> {
     @Override
     public void close() {
         orderFailedDeserializer.close();
+        orderProcessedDeserializer.close();
     }
 }

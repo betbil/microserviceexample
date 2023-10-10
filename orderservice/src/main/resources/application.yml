@@ -9,6 +9,34 @@ spring:
     username: microuser
     password: micropass
     url: jdbc:postgresql://localhost:5432/microservicedb
+  kafka:
+    bootstrap-servers: capital-stud-12971-eu1-kafka.upstash.io:9092
+    properties:
+      security:
+        protocol: SASL_SSL
+      sasl:
+        mechanism: SCRAM-SHA-256
+        jaas:
+          config: org.apache.kafka.common.security.scram.ScramLoginModule required username="Y2FwaXRhbC1zdHVkLTEyOTcxJDiDGfz1CAupaBl9qGSlRP5nhAfB3a-FDKrNEvM" password="MTBjM2NhN2ItYjc1Yy00NGQzLTk1ZmEtY2ZlYzJkN2I3MjYy";
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            add:
+              type:
+                headers: false
+    consumer:
+      group-id: order-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.example.orderservice.eventconfig.consumes.MultiTopicJsonDeserializer
+      properties:
+        spring:
+          json:
+            use:
+              type:
+                headers: false
 
 logging:
   level:
@@ -21,6 +49,7 @@ logging:
         SQL: DEBUG
         tool:
           hbm2ddl: DEBUG
+
 
 server:
   port: 8091

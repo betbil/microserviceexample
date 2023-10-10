@@ -9,9 +9,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PortfolioItemRepository extends JpaRepository<PortfolioItem, Integer> {
-
-    List<PortfolioItem> findByStockIdAndUserId(Integer stockId, Integer userId);
-
-   // boolean existsPortfolioItemByStockIdAndUserId(Integer stockId, Integer userId);
-    //boolean existsPortfolioItemByUserIdAndStockId(Integer userId, Integer stockId);
+    Optional<PortfolioItem> findFirstByUserIdAndStockId(Integer userId, Integer stockId);
 }

@@ -11,29 +11,38 @@ import java.util.Map;
 @Slf4j
 public class MultiTopicJsonDeserializer implements Deserializer<Object> {
 
-    private final JsonDeserializer<OrderFailedEvent> orderFailedDeserializer = new JsonDeserializer<>(OrderFailedEvent.class);
+    private final JsonDeserializer<BuyOrderPlacedEvent> buyOrderPlacedEventDeserializer = new JsonDeserializer<>(BuyOrderPlacedEvent.class);
+    private final JsonDeserializer<SellOrderPlacedEvent> sellOrderPlacedEventDeserializer = new JsonDeserializer<>(SellOrderPlacedEvent.class);
+    private final JsonDeserializer<CancelOrderPlacedEvent> cancelOrderPlacedEventDeserializer = new JsonDeserializer<>(CancelOrderPlacedEvent.class);
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
-        orderFailedDeserializer.configure(configs, isKey);
+        buyOrderPlacedEventDeserializer.configure(configs, isKey);
+        sellOrderPlacedEventDeserializer.configure(configs, isKey);
+        cancelOrderPlacedEventDeserializer.configure(configs, isKey);
     }
 
     @Override
     public Object deserialize(String topic, byte[] data) {
         Object result = null;
-        if ("order-failed".equals(topic)) {
-            result = orderFailedDeserializer.deserialize(topic, data);
+        if ("buy-order-placed-c1".equals(topic)) {
+            result = buyOrderPlacedEventDeserializer.deserialize(topic, data);
+        } else if ("sell-order-placed-c1".equals(topic)) {
+            result = sellOrderPlacedEventDeserializer.deserialize(topic, data);
+        } else if ("cancel-order-placed".equals(topic)) {
+            result = cancelOrderPlacedEventDeserializer.deserialize(topic, data);
         }
-        // Add more topics as needed.
-        // TODO: Also consider adding error handling for unrecognized topics.
         String jsonString = new String(data, StandardCharsets.UTF_8);
         log.debug("Deserialized object: {}", result);
         log.debug("received json: {}", jsonString);
+
         return result;
     }
 
     @Override
     public void close() {
-        orderFailedDeserializer.close();
+        buyOrderPlacedEventDeserializer.close();
+        sellOrderPlacedEventDeserializer.close();
+        cancelOrderPlacedEventDeserializer.close();
     }
 }

@@ -20,7 +20,9 @@ public class UserOrderController {
     public void buyOrder(@RequestBody BuyOrderRequest buyOrderRequest) {
        //TODO: userid jwt den alacak şekide değiştir
        log.info("buyOrder request received: {}", buyOrderRequest);
-       this.userService.checkStockExists(buyOrderRequest.getStockCode());
+       //TODO: SONRA AC STARTS TODOBETUL
+       //this.userService.checkStockExists(buyOrderRequest.getStockCode());
+       //TODO: SONRA AC ENDS
        this.userService.buyOrder(buyOrderRequest);
 
     }

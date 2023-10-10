@@ -1,6 +1,7 @@
 package com.example.userservice.service;
 
 import com.example.userservice.eventconfig.consumes.OrderFailedEvent;
+import com.example.userservice.eventconfig.consumes.OrderProcessedEvent;
 import com.example.userservice.eventconfig.produces.BuyOrderPlacedEvent;
 import com.example.userservice.eventconfig.produces.CancelOrderPlacedEvent;
 import com.example.userservice.eventconfig.produces.SellOrderPlacedEvent;
@@ -112,12 +113,45 @@ public class UserOrderService {
         log.debug("handleOrderFailedEvent request: {}", orderFailedEvent);
         Optional<UserOrderRequest> failedOrder = this.userOrderRequestRepository.findById(orderFailedEvent.getOrderId());
         if (failedOrder.isPresent()){
+           if (failedOrder.get().getStatus() != OrderStatusType.PENDING){
+                log.info("Order already processed: {} so fail ignored", orderFailedEvent.getOrderId());
+                return;
+            }
             failedOrder.get().setStatus(OrderStatusType.FAILED);
             failedOrder.get().setStatusDescription(orderFailedEvent.getReason());
             this.userOrderRequestRepository.save(failedOrder.get());
         }else{
             log.info("Order not found: {} so cancel ignored", orderFailedEvent.getOrderId());
         }
+    }
 
+    @KafkaListener(topics = "order-processed", groupId = "user-service")
+    @Transactional //TODO: check if this is needed
+    public void handleOrderProcessedEvent(OrderProcessedEvent orderProcessedEvent) {
+        log.debug("handleOrderProcessedEvent request: {}", orderProcessedEvent);
+
+        Optional<UserOrderRequest> buyOrder = this.userOrderRequestRepository.findById(orderProcessedEvent.getBuyOrderID());
+        Optional<UserOrderRequest> sellOrder = this.userOrderRequestRepository.findById(orderProcessedEvent.getSellOrderID());
+
+        if (buyOrder.isPresent()){
+            if (!buyOrder.get().getStatus().equals(OrderStatusType.PENDING)){
+                log.info("Buy Order {} not pending {} so completed order ignored", orderProcessedEvent.getBuyOrderID(),
+                        buyOrder.get().getStatus());
+            }else{
+                buyOrder.get().setStatus(OrderStatusType.COMPLETED);
+                this.userOrderRequestRepository.save(buyOrder.get());
+            }
+        }
+
+        if (sellOrder.isPresent()){
+            if (!sellOrder.get().getStatus().equals(OrderStatusType.PENDING)){
+                log.info("Sell Order {} not pending {} so completed order ignored", orderProcessedEvent.getSellerId(),
+                        sellOrder.get().getStatus());
+            }else{
+                sellOrder.get().setStatus(OrderStatusType.COMPLETED);
+                this.userOrderRequestRepository.save(sellOrder.get());
+            }
+        }
+        log.info("handleOrderProcessedEvent request: {} processed", orderProcessedEvent);
     }
 }

@@ -18,14 +18,15 @@ import java.util.UUID;
 @Builder
 public class SellOrder {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
     private UUID id;
     private Integer userId;
     private Integer stockId;
+    @Enumerated(EnumType.STRING)
+    private OrderStatusType status;
     @Column(nullable = false, updatable = false)
     private LocalDateTime requestTime;
+    @PrePersist
+    public void prePersist() {
+        this.requestTime = LocalDateTime.now();
+    }
 }

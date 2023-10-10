@@ -12,14 +12,15 @@ public class MultiTopicJsonDeserializer implements Deserializer<Object> {
 
     private final ExtendedJsonDeserializer<BuyOrderPlacedEvent> buyOrderDeserializer = new ExtendedJsonDeserializer<>(BuyOrderPlacedEvent.class);
     private final ExtendedJsonDeserializer<SellOrderPlacedEvent> sellOrderDeserializer = new ExtendedJsonDeserializer<>(SellOrderPlacedEvent.class);
+    private final ExtendedJsonDeserializer<OrderProcessedEvent> orderProcessedDeserializer = new ExtendedJsonDeserializer<>(OrderProcessedEvent.class);
 
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
         buyOrderDeserializer.configure(configs, isKey);
         sellOrderDeserializer.configure(configs, isKey);
-
-
-        DefaultJackson2JavaTypeMapper typeMapper = new DefaultJackson2JavaTypeMapper();
+        orderProcessedDeserializer.configure(configs, isKey);
+        
+        //DefaultJackson2JavaTypeMapper typeMapper = new DefaultJackson2JavaTypeMapper();
         //buyOrderDeserializer.setTypeResolver(typeMapper);
         //sellOrderDeserializer.setTypeResolver(typeMapper);
     }
@@ -31,6 +32,8 @@ public class MultiTopicJsonDeserializer implements Deserializer<Object> {
             result = buyOrderDeserializer.deserialize(topic, data);
         } else if ("sell-order-placed".equals(topic)) {
             result = sellOrderDeserializer.deserialize(topic, data);
+        }else if ("order-processed".equals(topic)) {
+            result = orderProcessedDeserializer.deserialize(topic, data);
         }
         String jsonString = new String(data, StandardCharsets.UTF_8);
         log.debug("Deserialized object: {}", result);
@@ -44,5 +47,6 @@ public class MultiTopicJsonDeserializer implements Deserializer<Object> {
     public void close() {
         buyOrderDeserializer.close();
         sellOrderDeserializer.close();
+        orderProcessedDeserializer.close();
     }
 }
