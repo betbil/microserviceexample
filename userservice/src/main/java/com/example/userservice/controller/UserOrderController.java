@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -67,5 +68,20 @@ public class UserOrderController {
 
         log.info("cancelOrder request received: orderID {}, userID {}", orderID, userID);
         this.userService.cancelOrder(orderID,userID);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<APPUser>  GetUser() {
+        //get user from auth
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof APPUser) {
+                return ResponseEntity.ok((APPUser) principal);
+            }
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }
